@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import { UserContext } from "./UserContext";
 
 function Register() {
-    const [semester, SetSemester] = useState(1);
+    const [semester, setSemester] = useState(1);
     const [userData, setUserData] = useState({
         userType: "admin",
         email: "",
@@ -49,7 +49,17 @@ function Register() {
                 <input type="text" name="lastName" value={userData.lastName} onChange={handleInputChange} placeholder="Last Name" className="block w-full rounded-sm p-2 mb-2" />
                 {
                     userData.userType === "student" &&
-                    <input type="number" name="semester" value={semester} onChange={(ev) => SetSemester(ev.target.value)} placeholder="Semester" className="block w-full rounded-sm p-2 mb-2" />
+                    <input
+                        type="number"
+                        name="semester"
+                        value={semester}
+                        onChange={(ev) => setSemester(ev.target.value)}
+                        placeholder="Semester"
+                        className="block w-full rounded-sm p-2 mb-2"
+                        min={1}
+                        max={8}
+                    />
+
                 }
                 <input type="email" name="email" value={userData.email} onChange={handleInputChange} placeholder="Email" className="block w-full rounded-sm p-2 mb-2" />
                 <input type="password" name="password" value={userData.password} onChange={handleInputChange} placeholder="Password" className="block w-full rounded-sm p-2 mb-2" />

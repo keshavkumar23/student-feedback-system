@@ -24,7 +24,9 @@ const studentSchema = new mongoose.Schema({
     },
     semester: {
         type: Number,
-        required: true
+        required: true,
+        min: 1,
+        max: 8
     }
 }, {
     timestamps: true // Automatically add createdAt and updatedAt fields

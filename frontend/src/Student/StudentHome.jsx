@@ -1,3 +1,4 @@
+import ActiveCourses from "./ActiveCourses";
 import StudentNavbar from "./StudentNavbar";
 
 export default function StudentHome() {
@@ -11,7 +12,9 @@ export default function StudentHome() {
           </div>
         </header>
         <main>
-          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">{/* Your content */}</div>
+          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+            <ActiveCourses/>
+          </div>
         </main>
       </div>
     </>

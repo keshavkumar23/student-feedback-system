@@ -2,10 +2,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Admin = require("../models/AdminSchema");
 const Faculty = require("../models/FacultySchema");
+const Course = require('../models/CourseSchema');
+const CourseRating = require('../models/CourseRatingSchema');
 
 
 
-const jwtSecretKey = "ehfwiehfsdhvlisecbeviubfv;nfnvoiufbvoidflksgkdjblsdgv";
+const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
 
 const admins = ['admin@gmail.com', "admin2@gmail.com"]
@@ -116,8 +118,99 @@ const createFaculty = async (req, res) => {
     }
 }
 
+const getFacultyProfile = async (req, res) => {
+    const { fid } = req.params;
+    try {
+      // Fetch faculty data from the database based on fid
+      const faculty = await Faculty.findOne({ _id: fid });
+      
+      if (!faculty) {
+        return res.status(404).json({ message: 'Faculty not found' });
+      }
+  
+      // Respond with only the required faculty data
+      const { firstName, lastName, facultyId, email, department } = faculty;
+      res.status(200).json({ firstName, lastName, facultyId, email, department });
+    } catch (error) {
+      console.error('Error fetching faculty data:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+const getFacultyCourses = async (req, res) => {
+    const { fid } = req.params;
+    try {
+        const courses = await Course.find({ fid :  fid });
+        // console.log('courses from backend are 1', courses);
+        if (courses.length === 0) {
+            return res.status(404).json({ message: "No courses found for this faculty ID" });
+        }
+        // console.log("courses 2 ", courses)
+        res.status(200).json(courses);
+    } catch (error) {
+        console.error("Error fetching the courses:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+const getCourseScore = async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Find the course ratings by courseId
+        const courses = await CourseRating.find({ courseId: id });
+
+        // Check if any courses were found
+        if (!courses || courses.length === 0) {
+            return res.status(404).json({ message: 'No course ratings found for the given course ID' });
+        }
+
+        // Initialize an object to store the ratings for each question
+        const ratings = {
+            question1: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+            question2: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+            question3: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+            question4: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+            question5: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+        };
+
+        // Loop through each course and update the ratings object
+        courses.forEach(course => {
+            Object.keys(course.ratings).forEach(question => {
+                ratings[question][course.ratings[question]]++;
+            });
+        });
+
+        // Convert the ratings object into the desired response format
+        const response = Object.keys(ratings).map(question => {
+            return {
+                question,
+                ratings: Object.keys(ratings[question]).map(star => ({
+                    star: parseInt(star),
+                    students: ratings[question][star]
+                }))
+            };
+        });
+        
+        const starData = response.map(question => question.ratings);
+
+
+        // Return the response
+        // console.log("Response:", starData);
+        res.status(200).json(starData);
+    } catch (error) {
+        console.error('Error fetching course ratings:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+
+
+
 module.exports = {
     registerAdmin,
     loginAdmin,
-    createFaculty
+    createFaculty,
+    getFacultyProfile,
+    getFacultyCourses,
+    getCourseScore
 };

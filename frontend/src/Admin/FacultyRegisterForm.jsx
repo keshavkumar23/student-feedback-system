@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
-import AdminNavbar from './AdminNavbar';
 
-const FacultyRegistrationForm = () => {
+const FacultyRegistrationForm = ({setFacultyFormModal}) => {
     const [formData, setFormData] = useState({
         userType: 'faculty',
         firstName: '',
@@ -12,7 +11,6 @@ const FacultyRegistrationForm = () => {
         email: '',
         password: ''
     });
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -37,12 +35,12 @@ const FacultyRegistrationForm = () => {
         } catch (error) {
             console.error('Error creating faculty:', error);
         }
+        setFacultyFormModal(false);
     };
     
 
     return (
         <>
-            <AdminNavbar />
             <div className="max-w-screen-lg mx-auto m-4 p-6 bg-white rounded shadow-md">
                 <h2 className="text-xl font-semibold mb-4">Faculty Registration Form</h2>
                 <form onSubmit={handleFacultyRegister} className="grid grid-cols-2 gap-4">
@@ -71,7 +69,20 @@ const FacultyRegistrationForm = () => {
                         <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="mt-1 p-2 w-full border-gray-300 rounded-md" required />
                     </div>
                     <div className="col-span-2 flex justify-center">
-                        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-[220px]">Register</button>
+                        <button 
+                        type="submit" 
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-[220px]"
+                        >
+                            Register
+                        </button>
+                    </div>
+                    <div className="col-span-2 flex justify-center">
+                        <button 
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-[220px]"
+                        onClick={() => setFacultyFormModal(false)}
+                        >
+                            Cancel
+                        </button>
                     </div>
                 </form>
             </div>

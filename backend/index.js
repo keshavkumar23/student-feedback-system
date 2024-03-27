@@ -1,18 +1,22 @@
 const express = require("express");
+require("dotenv").config();
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
-const Admin = require("./models/AdminSchema");
-const adminRoutes = require("./routes/adminRoutes");
-const facultyRoutes = require("./routes/facultyRoutes");
-const studentRoutes = require("./routes/studentRoutes");
+const Faculty = require("./models/FacultySchema");
+const Student = require("./models/StudentSchema");
+const Course = require("./models/CourseSchema");
+const adminRoutes = require("./routes/AdminRoutes");
+const facultyRoutes = require("./routes/FacultyRoutes");
+const studentRoutes = require("./routes/StudentRoutes");
+
 
 const app = express();
 const port = 4040;
-const mongoUrl = "mongodb+srv://keshavkumardpr1:saini123@cluster0.5fci1bg.mongodb.net/sfs-keshav";
-const jwtSecretKey = "ehfwiehfsdhvlisecbeviubfv;nfnvoiufbvoidflksgkdjblsdgv";
+const mongoUrl = process.env.MONGO_URL;
+const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
 // Middleware
 app.use(cors({
@@ -57,6 +61,25 @@ app.get("/profile", (req, res) => {
         res.status(401).json('No token found');
     }
 });
+
+app.get("/faculty-details", async (req, res) => {
+    try {
+        const faculties = await Faculty.find();
+        res.status(200).json(faculties);
+      } catch (error) {
+        console.error('Error fetching faculties:', error);
+        res.status(500).json({ message: 'Error fetching faculties' });
+      }
+})
+app.get("/student-details", async (req, res) => {
+    try {
+        const students = await Student.find();
+        res.status(200).json(students);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+        res.status(500).json({ message: 'Error fetching students' });
+      }
+})
 
 app.post("/logout", (req, res) => {
     res.clearCookie('token').json({ message: 'Logged out successfully' });

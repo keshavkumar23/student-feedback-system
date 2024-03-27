@@ -1,3 +1,4 @@
+import CourseList from "./CourseList";
 import FacultyNavbar from "./FacultyNavbar";
 
 export default function AdminHome() {
@@ -11,7 +12,9 @@ export default function AdminHome() {
           </div>
         </header>
         <main>
-          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">{/* Your content */}</div>
+          <div className="mx-auto max-w-8xl py-6 sm:px-6 lg:px-8">
+            <CourseList/>
+          </div>
         </main>
       </div>
     </>
