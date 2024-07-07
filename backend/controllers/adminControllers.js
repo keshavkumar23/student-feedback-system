@@ -4,7 +4,7 @@ const Admin = require("../models/AdminSchema");
 const Faculty = require("../models/FacultySchema");
 const Course = require('../models/CourseSchema');
 const CourseRating = require('../models/CourseRatingSchema');
-
+const FacultyRating = require('../models/FacultyRatingSchema');
 
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
@@ -203,6 +203,120 @@ const getCourseScore = async (req, res) => {
     }
 }
 
+const activateFaculty = async (req, res) => {
+    const facultyId = req.params.id;
+    const { facultyFeedbackCode } = req.body;
+
+    try {
+        // Find the faculty by ID
+        const faculty = await Faculty.findById(facultyId);
+
+        // If faculty not found, return 404 status
+        if (!faculty) {
+            return res.status(404).json({ message: 'Faculty not found' });
+        }
+
+        // Check if the faculty is already active
+        if (faculty.active === 'true') {
+            return res.status(400).json({ message: 'Faculty is already active' });
+        }
+
+        // Set the feedback code and activate the faculty
+        faculty.active = 'true';
+        faculty.feedbackCode = facultyFeedbackCode;
+
+        // Save the updated faculty
+        await faculty.save();
+
+        // Return the updated course
+        res.json(faculty);
+    } catch (error) {
+        // Return error status and message if any error occurs
+        console.error('Error activating faculty : ', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const deactivateFaculty = async (req, res) => {
+    const facultyId = req.params.id;
+
+    try {
+        // Find the course by ID
+        const faculty = await Faculty.findById(facultyId);
+
+        // If faculty not found, return 404 status
+        if (!faculty) {
+            return res.status(404).json({ message: 'Faculty not found' });
+        }
+        if (faculty.active === 'false') {
+            return res.status(400).json({ message: 'Faculty is already deactivated' });
+        }
+
+        // Toggle the 'active' status of the faculty
+        faculty.active = 'false';
+        faculty.feedbackCode = ""
+        // Save the updated course
+        await faculty.save();
+
+        // Return the updated course
+        res.json(faculty);
+    } catch (error) {
+        // Return error status and message if any error occurs
+        console.error('Error deactivating faculty activation:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+const getFacultyScore = async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Find the course ratings by courseId
+        const faculties = await FacultyRating.find({ facultyId: id });
+
+        // Check if any courses were found
+        if (!faculties || faculties.length === 0) {
+            return res.status(404).json({ message: 'No faculty ratings found for the given faculty ID' });
+        }
+
+        // Initialize an object to store the ratings for each question
+        const ratings = {
+            question1: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+            question2: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+            question3: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+            question4: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+            question5: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+        };
+
+        // Loop through each course and update the ratings object
+        faculties.forEach(course => {
+            Object.keys(course.ratings).forEach(question => {
+                ratings[question][course.ratings[question]]++;
+            });
+        });
+
+        // Convert the ratings object into the desired response format
+        const response = Object.keys(ratings).map(question => {
+            return {
+                question,
+                ratings: Object.keys(ratings[question]).map(star => ({
+                    star: parseInt(star),
+                    students: ratings[question][star]
+                }))
+            };
+        });
+        
+        const starData = response.map(question => question.ratings);
+
+
+        // Return the response
+        // console.log("Response:", starData);
+        res.status(200).json(starData);
+    } catch (error) {
+        console.error('Error fetching faculty ratings:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 
 
 
@@ -212,5 +326,8 @@ module.exports = {
     createFaculty,
     getFacultyProfile,
     getFacultyCourses,
-    getCourseScore
+    getCourseScore,
+    activateFaculty,
+    deactivateFaculty,
+    getFacultyScore
 };

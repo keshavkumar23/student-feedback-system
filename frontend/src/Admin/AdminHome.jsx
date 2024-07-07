@@ -6,8 +6,9 @@ export default function AdminHome() {
       <div className="min-h-full">
         <AdminNavbar/>
         <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Admin Dashboard</h1>
+          <div className="py-6 sm:px-6 flex gap-5 align-center justify-center">
+            <img src="img_33.png" alt="" height={50} width={50} className="rounded-full"/>
+            <div className="text-4xl font-bold tracking-tight text-gray-900 pt-1">Admin Dashboard</div>
           </div>
         </header>
         <main>

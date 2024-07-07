@@ -10,6 +10,7 @@ import FacultyDetails from './Admin/FacultyDetails';
 import StudentDetails from './Admin/StudentDetails';
 import CourseForm from "./Faculty/CourseForm"; 
 import FacultyProfile from './Admin/FacultyProfile';
+import AdminProfile from './Admin/AdminProfile';
 const UserRoutes = () => {
   const { userType, id } = useContext(UserContext);
   // if (userType === 'admin') {
@@ -34,6 +35,7 @@ const UserRoutes = () => {
         <Route path="/admin/student-details" element={<StudentDetails />} />
         <Route path="/faculty/course-form" element={<CourseForm />} />
         <Route path="/admin/faculty-details/faculty/profile" element={<FacultyProfile/>} />
+        <Route path="/admin/profile" element={<AdminProfile/>} />
       </Routes>
     </Router>
   )

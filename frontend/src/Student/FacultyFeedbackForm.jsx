@@ -1,11 +1,11 @@
 import { useState, useContext } from 'react';
 import axios from 'axios';
-import courseRatingQuestions from "./Data/CourseRatingQuestions"
+import facultyRatingQuestions from "./Data/FacultyRatingQuestions"
 import { UserContext } from '../UserContext';
-const CourseFeedbackForm = ({ selectedCourse, setRedirectToFeedback, setFeedbackCode }) => {
+const FacultyFeedbackForm = ({ selectedFaculty, setRedirectToFeedback, setFeedbackCode }) => {
     const { id } = useContext(UserContext);
 
-    const [ratings, setRatings] = useState(Array(courseRatingQuestions.length).fill(0));
+    const [ratings, setRatings] = useState(Array(facultyRatingQuestions.length).fill(0));
     const [comment, setComment] = useState("");
     // Function to handle form submission
 
@@ -16,8 +16,8 @@ const CourseFeedbackForm = ({ selectedCourse, setRedirectToFeedback, setFeedback
 
         try {
             // Send a POST request to the backend to store the ratings
-            const response = await axios.post('/api/student/store-course-ratings', {
-                courseId: selectedCourse._id,
+            const response = await axios.post('/api/student/store-faculty-ratings', {
+                facultyId: selectedFaculty._id,
                 studentId: id,
                 ratings: ratings,
                 comment: comment
@@ -41,17 +41,15 @@ const CourseFeedbackForm = ({ selectedCourse, setRedirectToFeedback, setFeedback
             <div className="absolute bg-white p-6 shadow-md rounded-md">
                 <p className="text-lg font-semibold mb-5">Faculty Feedback Form</p>
                 <div className="w-[40vw] mx-auto p-4 bg-white shadow-md rounded-md h-[70vh] overflow-auto">
-                    <h2 className="text-xl font-semibold mb-4">Feedback for {selectedCourse.courseName}</h2>
+                    <h2 className="text-xl font-semibold mb-4">Feedback for {selectedFaculty.firstName + " " + selectedFaculty.lastName}</h2>
                     <div className="mb-4">
-                        <p className="font-semibold">Course ID: {selectedCourse._id}</p>
-                        <p className="font-semibold">Faculty ID: {selectedCourse.fid}</p>
-                        <p className="font-semibold">Semester: {selectedCourse.semester}</p>
-                        <p className="font-semibold">Course Class: {selectedCourse.courseClass}</p>
-                        <p className="font-semibold">Course Code: {selectedCourse.courseCode}</p>
+                        <p className="font-semibold">Fid : {selectedFaculty._id}</p>
+                        <p className="font-semibold">Faculty Id : {selectedFaculty.facultyId}</p>
+                        <p className="font-semibold">Department : {selectedFaculty.department}</p>
                     </div>
                     <form onSubmit={handleSubmit}>
                         {/* Feedback questions */}
-                        {courseRatingQuestions.map((question, index) => (
+                        {facultyRatingQuestions.map((question, index) => (
                             <div className="mb-6" key={index}>
                                 <p className="text-lg font-semibold">{question.heading}</p>
                                 <p className="text-gray-600 mb-2">{question.description}</p>
@@ -82,12 +80,12 @@ const CourseFeedbackForm = ({ selectedCourse, setRedirectToFeedback, setFeedback
                         <div className='flex items-center justify-center gap-5'>
                             <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit</button>
                             <button
-                            onClick={() => {
-                                setRedirectToFeedback(false)
-                                setFeedbackCode("")
-                            }
-                            }
-                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={() => {
+                                    setRedirectToFeedback(false)
+                                    setFeedbackCode("")
+                                }
+                                }
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                             >
                                 Cancel
                             </button>
@@ -100,4 +98,4 @@ const CourseFeedbackForm = ({ selectedCourse, setRedirectToFeedback, setFeedback
     );
 };
 
-export default CourseFeedbackForm;
+export default FacultyFeedbackForm;

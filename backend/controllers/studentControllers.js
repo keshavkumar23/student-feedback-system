@@ -2,7 +2,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Student = require("../models/StudentSchema");
 const Course = require("../models/CourseSchema");
+const Faculty = require("../models/FacultySchema");
 const CourseRating = require("../models/CourseRatingSchema");
+const FacultyRating = require("../models/FacultyRatingSchema");
 
 // Controller function to create a new student
 
@@ -93,7 +95,7 @@ const activeCourse = async (req, res) => {
     }
 }
 
-const validateFeedbackCode = async (req, res) => {
+const validateCourseFeedbackCode = async (req, res) => {
     try {
         const { courseId, feedbackCode } = req.body;
 
@@ -147,13 +149,78 @@ const addCourseFeedback = async (req, res) => {
     }
 };
 
+const validateFacultyFeedbackCode = async (req, res) => {
+    try {
+        const { facultyId, feedbackCode } = req.body;
 
+        // Find the faculty by courseId
+        const faculty = await Faculty.findById(facultyId);
+
+        if (!faculty) {
+            return res.status(404).json({ message: 'Faculty not found' });
+        }
+
+        // Compare the feedback code
+        if (faculty.feedbackCode === feedbackCode) {
+            return res.json({ valid: true, message: 'Feedback code is valid' });
+        } else {
+            return res.json({ valid: false, message: 'Invalid feedback code' });
+        }
+    } catch (error) {
+        console.error('Error verifying feedback code:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+const activeFaculties = async (req, res) => {
+    try {
+        const faculties = await Faculty.find({active: "true"});
+        res.json(faculties);
+    } catch (error) {
+        console.error('Error fetching faculties:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const addFacultyFeedback = async (req, res) => {
+    try {
+        const { facultyId, studentId, ratings, comment } = req.body;
+
+        const existingFeedback = await FacultyRating.findOne({ facultyId, studentId });
+        if (existingFeedback) {
+            return res.status(400).json({ error: 'Feedback already submitted for this faculty' });
+        }
+
+        // Convert ratings array to an object with keys question1, question2, ...
+        const ratingsObject = {};
+        ratings.forEach((rating, index) => {
+            ratingsObject[`question${index + 1}`] = rating;
+        });
+
+        const newRating = new FacultyRating({
+            facultyId,
+            studentId,
+            ratings: ratingsObject,
+            comment
+        });
+
+        await newRating.save();
+
+        res.status(201).json({ message: 'Faculty rating saved successfully' });
+    } catch (error) {
+        console.error('Error saving faculty rating:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 
 module.exports = {
     registerStudent,
     loginStudent,
     activeCourse,
-    validateFeedbackCode,
-    addCourseFeedback
+    validateCourseFeedbackCode,
+    addCourseFeedback,
+    validateFacultyFeedbackCode,
+    activeFaculties,
+    addFacultyFeedback,
 };

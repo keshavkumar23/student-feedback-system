@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from "axios"
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell, Tooltip, Legend, CartesianGrid } from "recharts"
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell, Tooltip, Legend} from "recharts"
 
 function CourseList({ courses }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -8,14 +8,14 @@ function CourseList({ courses }) {
     const [courseRatings, setCourseRatings] = useState([]);
 
     useEffect(() => {
-        window.scrollTo(0, 0); // Scroll to the top when the component mounts
+        window.scrollTo(0, 0);
     }, []);
 
     const viewCourseScore = async (id) => {
-        console.log('course id to view score is ', id);
+        // console.log('course id to view score is ', id);
         try {
             const response = await axios.get(`/api/admin/course/score/${id}`);
-            console.log('here is the response of the course score ', response, response.data);
+            // console.log('here is the response of the course score ', response, response.data);
 
             setCourseRatings(response.data);
         } catch (error) {
@@ -73,7 +73,7 @@ function CourseList({ courses }) {
 
     const closeModal = () => {
         setIsModalOpen(false)
-        // setCourseRatings([]);
+        setCourseRatings([]);
     }
 
     return (

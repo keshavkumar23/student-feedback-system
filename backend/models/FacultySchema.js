@@ -29,7 +29,15 @@ const FacultySchema =new mongoose.Schema({
   password:{
     type:String,
     require:true
-  }
+  },
+  active: {
+    type: String,
+    default: false,
+  },
+  feedbackCode : {
+    type: String,
+    default: ""
+  },
 })
 
 const Faculty = mongoose.model('Faculty',FacultySchema);

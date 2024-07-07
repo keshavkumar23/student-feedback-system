@@ -1,33 +1,31 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect} from 'react';
 import axios from 'axios';
-import { UserContext } from '../UserContext';
-import CourseFeedbackForm from './CourseFeedbackForm';
+import FacultyFeedbackForm from './FacultyFeedbackForm';
 
-const ActiveCourses = () => {
-    const { userType, semester } = useContext(UserContext);
-    const [courses, setCourses] = useState([]);
+const ActiveFaculties = () => {
+    const [faculties, setFaculties] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [selectedFaculty, setSelectedFaculty] = useState(null);
     const [feedbackCode, setFeedbackCode] = useState('');
     const [feedbackMessage, setFeedbackMessage] = useState('');
     const [redirectToFeedback, setRedirectToFeedback] = useState(false);
 
     useEffect(() => {
-        const fetchCourses = async () => {
+        const fetchFaculties = async () => {
             try {
-                const response = await axios.get(`api/student/active-course-list/${semester}`);
-                const activeCourses = response.data.map(course => ({ ...course, active: false }));
-                setCourses(activeCourses);
+                const response = await axios.get(`api/student/active-faculties`);
+                const activeFaculties = response.data.map(faculty => ({ ...faculty, active: false }));
+                setFaculties(activeFaculties);
             } catch (error) {
-                console.error('Error fetching courses:', error);
+                console.error('Error fetching faculties:', error);
             }
         };
 
-        fetchCourses();
-    }, [semester]);
+        fetchFaculties();
+    }, []);
 
-    const openModal = (course) => {
-        setSelectedCourse(course);
+    const openModal = (faculty) => {
+        setSelectedFaculty(faculty);
         setShowModal(true);
     };
 
@@ -41,8 +39,8 @@ const ActiveCourses = () => {
 
     const validateFeedbackCode = async () => {
         try {
-            const response = await axios.post('/api/student/verify-course-feedback-code', {
-                courseId: selectedCourse._id,
+            const response = await axios.post('/api/student/verify-faculty-feedback-code', {
+                facultyId: selectedFaculty._id,
                 feedbackCode: feedbackCode
             });
             if (response.data.valid) {
@@ -59,30 +57,29 @@ const ActiveCourses = () => {
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-            {courses.map(course => (
-                <div key={course._id}>
+            {faculties.map(faculty => (
+                <div key={faculty._id}>
                     <div className="bg-white p-4 shadow-md rounded-md w-full md:w-auto lg:w-auto xl:w-auto">
-                        <p className="text-lg font-semibold mb-2">{course.courseName}</p>
-                        <p className="text-gray-600 mb-2">Course Code: {course.courseCode}</p>
-                        <p className="text-gray-600 mb-2">Semester: {course.semester}</p>
-                        <p className="text-gray-600 mb-2">Course Class: {course.courseClass}</p>
-                        {userType === 'student' && (
+                        <p className="text-lg font-semibold mb-2">{faculty.firstName + " " +faculty.lastName}</p>
+                        <p className="text-gray-600 mb-2">faculty Id: {faculty.facultyId}</p>
+                        <p className="text-gray-600 mb-2">Department: {faculty.department}</p>
+                        {/* {userType === 'student' && ( */}
                             <div className="mt-2">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-                                    onClick={() => openModal(course)}
+                                    onClick={() => openModal(faculty)}
                                 >
                                     Give Feedback
                                 </button>
                             </div>
-                        )}
+                        {/* )} */}
                     </div>
                 </div>
             ))}
-            {showModal && selectedCourse && (
+            {showModal && selectedFaculty && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
                     <div className="bg-white p-8 rounded-md shadow-md">
-                        <h2 className="text-lg font-semibold mb-4">Feedback for {selectedCourse.courseName}</h2>
+                        <h2 className="text-lg font-semibold mb-4">Feedback for {selectedFaculty.firstName + selectedFaculty.lastName}</h2>
                         <input
                             type="text"
                             placeholder="Enter feedback code"
@@ -108,9 +105,9 @@ const ActiveCourses = () => {
                     </div>
                 </div>
             )}
-            {redirectToFeedback && <CourseFeedbackForm selectedCourse={selectedCourse} setRedirectToFeedback={setRedirectToFeedback} setFeedbackCode={setFeedbackCode}/>}
+            {redirectToFeedback && <FacultyFeedbackForm selectedFaculty={selectedFaculty} setRedirectToFeedback={setRedirectToFeedback} setFeedbackCode={setFeedbackCode}/>}
         </div>
     );
 };
 
-export default ActiveCourses;
+export default ActiveFaculties;

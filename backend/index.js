@@ -8,13 +8,13 @@ const bcrypt = require("bcryptjs");
 const Faculty = require("./models/FacultySchema");
 const Student = require("./models/StudentSchema");
 const Course = require("./models/CourseSchema");
-const adminRoutes = require("./routes/AdminRoutes");
-const facultyRoutes = require("./routes/FacultyRoutes");
-const studentRoutes = require("./routes/StudentRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const facultyRoutes = require("./routes/facultyRoutes");
+const studentRoutes = require("./routes/studentRoutes");
 
 
 const app = express();
-const port = 4040;
+const port = process.env.PORT || 4040;
 const mongoUrl = process.env.MONGO_URL;
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
