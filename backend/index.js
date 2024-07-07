@@ -82,8 +82,9 @@ app.get("/student-details", async (req, res) => {
 })
 
 app.post("/logout", (req, res) => {
-    res.clearCookie('token').json({ message: 'Logged out successfully' });
-})
+    res.clearCookie('token', { sameSite: 'None', secure: true }).json({ message: 'Logged out successfully' });
+});
+
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
