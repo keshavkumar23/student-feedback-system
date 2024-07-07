@@ -20,7 +20,7 @@ const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Change this to your frontend origin
+  origin: 'https://student-feedback-system-itbd.onrender.com/', // Change this to your frontend origin
   credentials: true // Allow cookies to be sent with the request
 }));
 app.use(express.json());
